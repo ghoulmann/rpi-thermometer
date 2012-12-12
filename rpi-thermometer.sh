@@ -144,6 +144,7 @@ if [ "$1" == "config" ]; then
 		fi
 
 		#Create log file
+		mkdir -p $thermometer_log_path
 		touch $thermometer_log_path/$thermometer_log
 		if [ ! -e $thermometer_log_path/$thermometer_log ]; then
 			echo "There was an error creating the log file"
