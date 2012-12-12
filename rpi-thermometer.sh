@@ -129,7 +129,7 @@ graph_temperature()
 ###########################
 #uses install function to apt-get update and install
 
-if [[ $1 -eq "config"]]; then
+if [ $1 == "config" ]; then
 	privs
 	function configure()
 	{
@@ -138,19 +138,19 @@ if [[ $1 -eq "config"]]; then
 		check
 	
 		#Create RRD with RRD Tool
-		if [[ ! -e $path_to_db/$db]]; then
+		if [ ! -e $path_to_db/$db]; then
 			create_database $path_to_db $db
 			echo "$path_to_db/$db created."
 		fi
 
 		#Create log file
 		touch $thermometer_log_path/$thermometer_log
-		if [[ ! -e $thermometer_log_path/$thermometer_log ]]
+		if [ ! -e $thermometer_log_path/$thermometer_log ]; then
 			echo "There was an error creating the log file"
 		fi
 	
 		#Move executeable script
-		if [[ ! -e $executable_dir/$0 ]]; then
+		if [ ! -e $executable_dir/$0 ]; then
 			mv $origin/$0 $executable_dir/$0
 			check
 			echo "Moved $0 to $executable_dir."
@@ -166,3 +166,4 @@ if [[ $1 -eq "config"]]; then
 		check
 	}
 	echo "Installation and configuration complete."
+fi
