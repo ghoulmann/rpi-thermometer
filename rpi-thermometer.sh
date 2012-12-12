@@ -129,7 +129,7 @@ graph_temperature()
 ###########################
 #uses install function to apt-get update and install
 
-if [ $1 == "config" ]; then
+if [ "$1" = "config" ]; then
 	privs
 	function configure()
 	{
