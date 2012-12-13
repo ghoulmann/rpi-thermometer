@@ -24,3 +24,6 @@ To Do
 Haven't gotten the graphs working yet.
 Option to email at thresholds in conjunction with more packages.
 Install sqlite db and log data to sqlite for better versatility and web integration.
+Source
+------
+Used this, perhaps unwisely: http://neilbaldwin.net/blog/weather/raspberry-pi-data-logger/
