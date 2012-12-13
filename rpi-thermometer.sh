@@ -1,11 +1,9 @@
-#!/bin/bash -ex
+#!/bin/bash
 
 if [[ $EUID -ne 0 ]]; then
-   echo "$0 must be run as root with this argument." 1>&2
+   echo "$0 must be run as root." 1>&2
    exit 1
 fi
-
-origin=$(pwd)
 
 ############
 #Configuration Options
@@ -19,8 +17,9 @@ path_to_db="/var/local" #not sure where by FHS guidelines
 db="temperature.rrd" #name of rrd database to create
 weather_home="index.html" #weather web home file
 executable_dir="/usr/local/bin" #for rpi-thermometer.sh. Not sure by FHS convention.
-
-
+origin=$(pwd) #unnecessary now
+stamp=$(date)
+key=$(date +%s) #epoch in linux; perhaps key field if we use sqlite
 
 #To log (in conjunction with, for example,cron) execute this without arguments.
 #To install prerequisites and create the database and other stuff required before first use, use with config argument: rpi-thermometer.sh config
@@ -35,8 +34,8 @@ executable_dir="/usr/local/bin" #for rpi-thermometer.sh. Not sure by FHS convent
 #Functions#
 ###########
 
-#Exit on Error
-function check()
+#I think this is unused now
+function check() #function syntax 1
 {
 	if [[ $? -ne 0 ]];
 		then
@@ -45,9 +44,8 @@ function check()
 	fi
 }
 
-
-#Update and Install
-install ()
+#Update and Install from repos
+install () #function syntax 2
 {
 	apt-get update
 	DEBIAN_FRONTEND=noninteractive apt-get -y \
@@ -56,6 +54,7 @@ install ()
         install $@
 }
 
+#Function to create rrd log
 create_database ()
 {
 	rrdtool create $path_to_db/$db --start N --step 300 \
@@ -68,16 +67,16 @@ create_database ()
 	check
 }
 
+#all the logging stuff
 log_temperature ()
 {
 
-	celsius=$(cat $sensor)
-	echo $celsius
+	celsius=$(cat $sensor) #test on machine with sensor
+	echo $celsius #troubleshooting
 	fahrenheit=$(echo "scale=2;((9/5) * $celsius) + 32" |bc)
-	echo $fahrenheit
-	echo "Starting Log Process"
-	echo "Preparing Date"
-	stamp=$(date)
+	echo $fahrenheit #troubleshooting
+	echo "Starting Log Process" #troubleshooting
+	echo "Preparing Date" #troubleshooting
 	line=$(echo "$stamp, $celsius, $fahrenheit")
 	echo "This is the logged line: $line"
 	#write sensor information to log file
@@ -90,7 +89,7 @@ log_temperature ()
 	####################################
 	#write weather station web site#####
 	####################################
-	echo "Creating web page with heredoc"
+	echo "Creating web page with heredoc" #troubleshooting
 	cat <<EOD >$webroot/$weather_home
 	<html>
 		<head>
@@ -111,7 +110,7 @@ EOD
 graph_temperature ()
 {
 	echo "Creating graphs"
-	#Create temp_h.png
+	#Create temp_h.png - customized to see if it helps getting data graphed. Not sure it made a difference
 	rrdtool graph $graphdir/temp_h.png --start -1d --end now --x-grid MINUTE:10:HOUR:1:HOUR:2:0:%H:00 --vertical-label "Celsius" DEF:temp=$db:temp:AVERAGE LINE1:temp#0000FF:"Temperature [deg C]"
 	#Create other graphs
 	rrdtool graph $graphdir/temp_d.png --start -1d --vertical-label "Celsius" DEF:temp=$db:temp:AVERAGE LINE1:temp#0000FF:"Temperature [deg C]"
@@ -122,9 +121,6 @@ graph_temperature ()
 	chown -R www-data:www-data $graphdir/
 	
 }
-
-
-
 
 #configuration function
 function configure()
@@ -164,18 +160,19 @@ function configure()
 	#test -d for directory
 	mkdir -p $graphdir
 	check
-	exit 0
-	}
+}
 
 #CONFIGURE
 if [ "$1" == "config" ]; then
 	configure
 	check
-	echo "Installation and configuration complete."
+	echo "Installation and configuration complete." #Consider pointing to changes made by the config function. Consider instructions for crontab.
+	exit 0
 fi
 
 #Log Temperature
-echo "Logging Temperature"
-log_temperature
-echo "Graphing Temperature"
-graph_temperature
+echo "Logging Temperature" #troubleshooting
+log_temperature #call function
+#Graph Temperature
+echo "Graphing Temperature" #troubleshooting
+graph_temperature #call function
