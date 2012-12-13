@@ -49,7 +49,7 @@ key=$(date +%s) #epoch in linux; perhaps key field if we use sqlite
 ###########
 
 #I think this is unused now
-function check() #function syntax 1
+function check #function syntax 1
 {
 	if [[ $? -ne 0 ]];
 		then
@@ -118,7 +118,7 @@ log_temperature ()
 EOD
 	echo "<pre>" >> $webroot/$weather_home
 	tail -100 $thermometer_log_path/$thermometer_log >> $webroot/$weather_home
-	echo "</pre></body></html>" >> /usr/share/nginx/www/index.html
+	echo "</pre></body></html>" >> $webroot/$weather_home
 	chown www-data:www-data $webroot/$weather_home
 }
 
