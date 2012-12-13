@@ -3,16 +3,16 @@ rpi-thermometer
 Given
 -----------
 Intended for use with Raspberry Pi running Raspbian with 1wire solution. Tested only with this sensor gear:
--Sensor 18S20 w/o moisture resistant coating
--1wire USB adaptor DS9490R-P
--Adaptor cable RJ-45 to RJ-11 (1 meter)
+*Sensor 18S20 w/o moisture resistant coating
+*1wire USB adaptor DS9490R-P
+*Adaptor cable RJ-45 to RJ-11 (1 meter)
 
 Purpose
 ----------
 Used with a single sensor to store and graph temperature over time. Produces a web page with:
--Graph of last 1 day of reading in hours (celsius only)
--Last Reading Date/time, Degrees C, Degrees F
--In preformatted text: last 100 reading (earliest to latest)
+*Graph of last 1 day of reading in hours (celsius only)
+*Last Reading Date/time, Degrees C, Degrees F
+*In preformatted text: last 100 reading (earliest to latest)
 
 Usage
 -----
