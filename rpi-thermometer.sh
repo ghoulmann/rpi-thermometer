@@ -1,5 +1,12 @@
 #!/bin/bash -ex
+
+if [[ $EUID -ne 0 ]]; then
+   echo "$0 must be run as root with this argument." 1>&2
+   exit 1
+fi
+
 origin=$(pwd)
+
 ############
 #Configuration Options
 ############
@@ -38,14 +45,6 @@ function check()
 	fi
 }
 
-#Check for root
-function privs()
-{
-	if [[ $EUID -ne 0 ]]; then
-	   echo "$0 must be run as root with this argument." 1>&2
-	   exit 1
-	fi
-}
 
 #Update and Install
 install ()
@@ -72,7 +71,7 @@ create_database ()
 log_temperature ()
 {
 
-	celsius='cat $sensor'
+	celsius=$(cat $sensor)
 	echo $celsius
 	fahrenheit=$(echo "scale=2;((9/5) * $celsius) + 32" |bc)
 	echo $fahrenheit
@@ -152,7 +151,7 @@ function configure()
 	
 	#Move executeable script
 	if [ ! -e $executable_dir/$0 ]; then
-		mv $origin/$0 $executable_dir/$0
+		cp $origin/$0 $executable_dir/$0
 		check
 		echo "Moved $0 to $executable_dir."
 		chmod +x $origin/$0
@@ -165,21 +164,18 @@ function configure()
 	#test -d for directory
 	mkdir -p $graphdir
 	check
+	exit 0
 	}
 
 #CONFIGURE
 if [ "$1" == "config" ]; then
-	privs
 	configure
 	check
 	echo "Installation and configuration complete."
 fi
 
 #Log Temperature
-get_temperature
-check
-get_fahrenheit
-check
+echo "Logging Temperature"
 log_temperature
-check
+echo "Graphing Temperature"
 graph_temperature
