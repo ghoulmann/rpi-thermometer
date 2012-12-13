@@ -57,7 +57,7 @@ install ()
         install $@
 }
 
-create_database()
+create_database ()
 {
 	rrdtool create $path_to_db/$db --start N --step 300 \
 	DS:temp:GAUGE:600:0:100 \
@@ -66,35 +66,32 @@ create_database()
 	RRA:AVERAGE:0.5:12:168 \
 	RRA:AVERAGE:0.5:12:720 \
 	RRA:AVERAGE:0.5:288:365
+	check
 }
 
-function get_temperature()
+log_temperature ()
 {
-	celsius=`cat /mnt/1wire/10.98C57C020800/temperature`
-	return celsius
-}
 
-get_fahrenheit()
-{
+	celsius='cat $sensor'
+	echo $celsius
 	fahrenheit=$(echo "scale=2;((9/5) * $celsius) + 32" |bc)
-	return $fahrenheit
-}
-log_temperature()
-{
-	#Prepare Date
+	echo $fahrenheit
+	echo "Starting Log Process"
+	echo "Preparing Date"
 	stamp=$(date)
-	line=$(echo '$stamp, $celsius, $fahrenheit')
-
+	line=$(echo "$stamp, $celsius, $fahrenheit")
+	echo "This is the logged line: $line"
 	#write sensor information to log file
 	echo $line >> $thermometer_log_path/$thermometer_log
 
 	#write sensor data to rrdtool database
+	echo "writing sensor data to database"
 	rrdtool update $path_to_db/$db N:$celsius
 
 	####################################
 	#write weather station web site#####
 	####################################
-	#Create web page with heredoc
+	echo "Creating web page with heredoc"
 	cat <<EOD >$webroot/$weather_home
 	<html>
 		<head>
@@ -112,8 +109,9 @@ EOD
 	chown www-data:www-data $webroot/$weather_home
 }
 
-graph_temperature()
+graph_temperature ()
 {
+	echo "Creating graphs"
 	#Create temp_h.png
 	rrdtool graph $graphdir/temp_h.png --start -1d --end now --x-grid MINUTE:10:HOUR:1:HOUR:2:0:%H:00 --vertical-label "Celsius" DEF:temp=$db:temp:AVERAGE LINE1:temp#0000FF:"Temperature [deg C]"
 	#Create other graphs
@@ -137,15 +135,17 @@ function configure()
 	check
 
 	#Create RRD with RRD Tool
-	if [ ! -e $path_to_db/$db]; then
+	if [ ! -e $path_to_db/$db ]; then
 		create_database
 		check
 		echo "$path_to_db/$db created."
 	fi
 
 	#Create log file
-	mkdir -p $thermometer_log_path
+	[ -e $thermometer_log_path ] || mkdir -p $thermometer_log_path
+	check
 	touch $thermometer_log_path/$thermometer_log
+	check
 	if [ ! -e $thermometer_log_path/$thermometer_log ]; then
 		echo "There was an error creating the log file"
 	fi
