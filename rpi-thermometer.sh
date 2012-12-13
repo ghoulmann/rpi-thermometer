@@ -111,7 +111,7 @@ graph_temperature ()
 {
 	echo "Creating graphs"
 	#Create temp_h.png - customized to see if it helps getting data graphed. Not sure it made a difference
-	rrdtool graph $graphdir/temp_h.png --start -1d --end now --x-grid MINUTE:10:HOUR:1:HOUR:2:0:%H:00 --vertical-label "Celsius" DEF:temp=$db:temp:AVERAGE LINE1:temp#0000FF:"Temperature [deg C]"
+	rrdtool graph $graphdir/temp_h.png --start -1d --end now --x-grid MINUTE:10:HOUR:1:HOUR:2:0:%H:00 --vertical-label "Celsius" DEF:temp=$path_to_db/$db:temp:AVERAGE LINE1:temp#0000FF:"Temperature [deg C]"
 	#Create other graphs
 	rrdtool graph $graphdir/temp_d.png --start -1d --vertical-label "Celsius" DEF:temp=$path_to_db/$db:temp:AVERAGE LINE1:temp#0000FF:"Temperature [deg C]"
 	rrdtool graph $graphdir/temp_w.png --start -1w --vertical-label "Celsius" DEF:temp=$path_to_db/$db:temp:AVERAGE LINE1:temp#0000FF:"Temperature [deg C]"
