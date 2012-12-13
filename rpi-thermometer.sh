@@ -98,7 +98,7 @@ log_temperature ()
 			<meta http-equiv="refresh" content="15">
 		</head>
 		<body bgcolor="white" text="black">
-			<center><h1>108B Weather Station</h1></center>
+			<center><h1>Weather Station</h1></center>
 			<center><img src="images/temp_h.png"></center>
 			<p><center><bold>Last Update: $now |Temperature (Fahrenheit): $fahrenheit | Temperature (Celsius): $celsius</bold></center></p>
 EOD
