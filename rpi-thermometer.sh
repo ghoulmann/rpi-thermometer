@@ -34,6 +34,9 @@ executable_dir="/usr/local/bin" #for rpi-thermometer.sh. Not sure by FHS convent
 origin=$(pwd) #unnecessary now
 stamp=$(date)
 key=$(date +%s) #epoch in linux; perhaps key field if we use sqlite
+weathers_station=KDCA
+local_outside=$(curl -s http://weather.noaa.gov/pub/data/observations/metar/decoded/KDCA.TXT|grep Temperature|cut -c 13-|cut -d " " -f 4|cut -c 2- >> outside.txt)
+
 
 #To log (in conjunction with, for example,cron) execute this without arguments.
 #To install prerequisites and create the database and other stuff required before first use, use with config argument: rpi-thermometer.sh config
