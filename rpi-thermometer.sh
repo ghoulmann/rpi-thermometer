@@ -73,6 +73,7 @@ log_temperature ()
 
 	celsius=$(cat $sensor) #test on machine with sensor
 	echo $celsius #troubleshooting
+	celsius=`echo $celsius | cut -c -4`
 	fahrenheit=$(echo "scale=2;((9/5) * $celsius) + 32" |bc)
 	echo $fahrenheit #troubleshooting
 	echo "Starting Log Process" #troubleshooting
