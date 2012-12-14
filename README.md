@@ -19,9 +19,16 @@ Usage
 Use in conjunction with cron (sudo crontab -e). Configure to launch rpi-thermostat.sh every minute (the RRD database expects every 300 seconds).
 Includes an install and configuration function: rpi-thermostat.sh config
 
+After running the script with the config argument, it's up to you to set a cron job: sudo crontab -e; end the file thusly:
+     * * * * * /usr/local/bin/rpi-thermometer. That will update the graphs, database, logs, and web page every minute.
+
+Setup logrotate. Help soon.
+
 To Do
 -----
-Install sqlite db and log data to sqlite for better versatility and web integration.
+*Configure logrotate
+*Install sqlite db and log data to sqlite for better versatility and web integration.
+
 Source
 ------
 Used this, perhaps unwisely: http://neilbaldwin.net/blog/weather/raspberry-pi-data-logger/
