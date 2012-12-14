@@ -34,3 +34,7 @@ To Do
 Source
 ------
 Used this, perhaps unwisely: http://neilbaldwin.net/blog/weather/raspberry-pi-data-logger/
+
+Reflection
+---------
+Coming to http://gonzotech.tumblr.com as soon as I get sed and cut options outta my head.
