@@ -26,8 +26,11 @@ Setup logrotate. Help soon.
 
 To Do
 -----
+*Comment for others
+*Add citeography
+*values argument: function got lost in revision shuffle. It should dump current settings.
 *Configure logrotate
-*Install sqlite db and log data to sqlite for better versatility and web integration.
+*Install sqlite db and log data to sqlite for better versatility and web integration. Needed for progress in webdev
 *change license based on student decision and as requested
 *change copyright (waiting for admin advisement)
 
