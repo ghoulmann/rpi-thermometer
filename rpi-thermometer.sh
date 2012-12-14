@@ -21,7 +21,7 @@
 executeable="rpi-thermometer"
 webroot="/usr/share/nginx/www" #where to put the web files (index.html)
 graphdir="/usr/share/nginx/www/images" #where to put the graphics (by default, for web)
-sensor="/mnt/1wire/10.98C57C020800/temperature" #sensor. Read like a file.
+sensor1="/mnt/1wire/10.98C57C020800/temperature" #sensor1. Read like a file.
 thermometer_log_path="/var/log/temperature" #where to put temp log
 thermometer_log="temperature.log" #by default, /var/log/temperature/temperature.log (thinking logrotate)
 path_to_db="/var/local" #not sure where by FHS guidelines
@@ -32,9 +32,10 @@ origin=$(pwd) #unnecessary now
 stamp=$(date)
 key=$(date +%s) #epoch in linux; perhaps key field if we use sqlite
 weathers_station="KDCA"
-local_outside=$(curl -s http://weather.noaa.gov/pub/data/observations/metar/decoded/KDCA.TXT|grep Temperature|cut -c 13-|cut -d " " -f 4|cut -c 2- >> outside.txt) #substitute $weather_station for KDCA
+local_outside=$(curl -s http://weather.noaa.gov/pub/data/observations/metar/decoded/KDCA.TXT|grep Temperature|cut -c 13-|cut -d " " -f 4|cut -c 2-) #substitute $weather_station for KDCA
 dummy="" #dummy temperature for troubleshooting flow on a machine w/o sensors
-#To install prerequisites and create the database and other stuff required before first use, use with config argument: rpi-thermometer.sh config
+
+
 
 ###########
 #Functions#
@@ -106,24 +107,24 @@ create_database ()
 log_temperature ()
 {
 	check_for_root
-	if [ $dummy == 0 ]
-		celsius=$(cat $sensor) #test on machine with sensor
+	if [ $dummy == 0 ]; then
+		celsius=$(cat $sensor1) #test on machine with sensor
 		echo $celsius #troubleshooting
 		celsius=`echo $celsius | cut -c -4`
 	else
-		celsius=$dummy
+		celsius="$dummy"
 	fi
+
 	fahrenheit=$(echo "scale=2;((9/5) * $celsius) + 32" |bc)
 	echo $fahrenheit #troubleshooting
 	echo "Starting Log Process" #troubleshooting
 	echo "Preparing Date" #troubleshooting
-	line=$(echo "$stamp, $celsius, $fahrenheit")
-	echo "This is the logged line: $line"
-	#write sensor information to log file
+	line=$(echo "$stamp, $celsius (c: sensor1), $fahrenheit" (F: derived from censor 1))
+	#write sensor1 information to log file
 	echo $line >> $thermometer_log_path/$thermometer_log
 
 	#write sensor data to rrdtool database
-	echo "writing sensor data to database"
+	echo "writing sensor1 data to database"
 	rrdtool update $path_to_db/$db N:$celsius
 
 	####################################
@@ -203,10 +204,7 @@ function configure()
 	check
 }
 
-#check usage
-if [ $# -ne 2 ]
-	usage()
-fi
+
 
 #CONFIGURE
 if [ "$1" == "config" ]; then
@@ -223,10 +221,13 @@ elif [ "$1" == "graph" ]; then
 	check_for_root
 	graph_temperature
 	exit 0
-elif [ "$1" == "values"]; then
-	echo "values"
+elif [ "$1" == "values" ]; then
+	echo "echo values here"     # TO DO
 	exit 0
-elif [ "$1" == "remove"]; then
-	remove() 
+elif [ "$1" == "remove" ]; then
+	remove
+	exit 0
 else
-	usage()
+	usage
+	exit 0
+fi
