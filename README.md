@@ -28,6 +28,8 @@ To Do
 -----
 *Configure logrotate
 *Install sqlite db and log data to sqlite for better versatility and web integration.
+*change license based on student decision and as requested
+*change copyright (waiting for admin advisement)
 
 Source
 ------
