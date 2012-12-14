@@ -14,14 +14,11 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-if [[ $EUID -ne 0 ]]; then
-   echo "$0 must be run as root." 1>&2
-   exit 1
-fi
 
 ############
 #Configuration Options
 ############
+executeable="rpi-thermometer"
 webroot="/usr/share/nginx/www" #where to put the web files (index.html)
 graphdir="/usr/share/nginx/www/images" #where to put the graphics (by default, for web)
 sensor="/mnt/1wire/10.98C57C020800/temperature" #sensor. Read like a file.
@@ -36,23 +33,43 @@ stamp=$(date)
 key=$(date +%s) #epoch in linux; perhaps key field if we use sqlite
 weathers_station="KDCA"
 local_outside=$(curl -s http://weather.noaa.gov/pub/data/observations/metar/decoded/KDCA.TXT|grep Temperature|cut -c 13-|cut -d " " -f 4|cut -c 2- >> outside.txt) #substitute $weather_station for KDCA
-
-
-
-#To log (in conjunction with, for example,cron) execute this without arguments.
+dummy="" #dummy temperature for troubleshooting flow on a machine w/o sensors
 #To install prerequisites and create the database and other stuff required before first use, use with config argument: rpi-thermometer.sh config
-
-#Usage function. Not sure best way to do this.
-#usage()
-#{
-#
-#}
 
 ###########
 #Functions#
 ###########
 
-#I think this is unused now
+usage()
+{
+	echo "rpi-thermometer is called with a single option (required)."
+	echo "rpi-thermometer remove: removes all files, including log files, created during config."
+	echo "rpi-thermometer config: Installs by moving the shell script, creating the database, creating the log file, etc."
+	echo "rpi-thermometer values: Display configured/configureable variables and values to stdout."
+	echo "rpi-thermometer update: Updates values in the database, log, and regenerates web page and generates graphs; requires root"
+	echo "rpi-thermometer graph: Generates graphs based on existing data. Does not update."
+}
+
+#check for root
+check_for_root()
+{
+	if [[ $EUID -ne 0 ]]; then
+    	echo "$0 must be run as root	." 1>&2
+    	exit 1
+	fi
+}
+
+remove()
+{
+	check_for_root
+	rm $path_to_db/$db
+	echo "database deleted"
+	rm -r $graphdir
+	echo $graphdir deleted
+	rm $webroot/$weather_home
+	echo $webroot/$weather_home deleted
+	rm $thermometer_log_path/$thermometer_log
+}
 function check #function syntax 1
 {
 	if [[ $? -ne 0 ]];
@@ -88,10 +105,14 @@ create_database ()
 #all the logging stuff
 log_temperature ()
 {
-
-	celsius=$(cat $sensor) #test on machine with sensor
-	echo $celsius #troubleshooting
-	celsius=`echo $celsius | cut -c -4`
+	check_for_root
+	if [ $dummy == 0 ]
+		celsius=$(cat $sensor) #test on machine with sensor
+		echo $celsius #troubleshooting
+		celsius=`echo $celsius | cut -c -4`
+	else
+		celsius=$dummy
+	fi
 	fahrenheit=$(echo "scale=2;((9/5) * $celsius) + 32" |bc)
 	echo $fahrenheit #troubleshooting
 	echo "Starting Log Process" #troubleshooting
@@ -166,32 +187,46 @@ function configure()
 	
 	#Move executeable script
 	if [ ! -e $executable_dir/$0 ]; then
-		cp $origin/$0 $executable_dir/$0
+		cp $0 $executable_dir/rpi-thermometer
+		chown root:sudo $executable_dir/$executeable
 		check
-		echo "Moved $0 to $executable_dir."
-		chmod +x $origin/$0
+		echo "copied $0 to $executable_dir/$executeable."
+		check
+		chmod +x $executable_dir/$executeable
 		check
 	fi
 		
 	#Add test for -d here
-	mkdir -p $webroot
+	[ -d $webroot ] || mkdir -p $webroot
 	check
-	#test -d for directory
-	mkdir -p $graphdir
+	[ -d $graphdir ] || mkdir -p $graphdir
 	check
 }
+
+#check usage
+if [ $# -ne 2 ]
+	usage()
+fi
 
 #CONFIGURE
 if [ "$1" == "config" ]; then
 	configure
 	check
-	echo "Installation and configuration complete." #Consider pointing to changes made by the config function. Consider instructions for crontab.
+	#echo "Installation and configuration complete." #Consider pointing to changes made by the config function. Consider instructions for crontab.
 	exit 0
-fi
-
-#Log Temperature
-echo "Logging Temperature" #troubleshooting
-log_temperature #call function
-#Graph Temperature
-echo "Graphing Temperature" #troubleshooting
-graph_temperature #call function
+elif [ "$1" == "update" ]; then
+	check_for_root
+	log_temperature
+	graph_temperature
+	exit 0
+elif [ "$1" == "graph" ]; then
+	check_for_root
+	graph_temperature
+	exit 0
+elif [ "$1" == "values"]; then
+	echo "values"
+	exit 0
+elif [ "$1" == "remove"]; then
+	remove() 
+else
+	usage()
