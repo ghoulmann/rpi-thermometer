@@ -108,24 +108,24 @@ log_temperature ()
 {
 	check_for_root
 	if [ $dummy == 0 ]; then
-		celsius=$(cat $sensor1) #test on machine with sensor
-		echo $celsius #troubleshooting
-		celsius=`echo $celsius | cut -c -4`
+		reading1=$(cat $sensor1) #test on machine with sensor
+		echo $reading1 #troubleshooting
+		reading1=`echo $reading1 | cut -c -4`
 	else
-		celsius="$dummy"
+		reading1="$dummy"
 	fi
 
-	fahrenheit=$(echo "scale=2;((9/5) * $celsius) + 32" |bc)
+	fahrenheit=$(echo "scale=2;((9/5) * $reading1) + 32" |bc)
 	echo $fahrenheit #troubleshooting
 	echo "Starting Log Process" #troubleshooting
 	echo "Preparing Date" #troubleshooting
-	line=$(echo "$stamp, $celsius (c: sensor1), $fahrenheit" (F: derived from censor 1))
+	line=$(echo "$stamp, $reading1 (c: sensor1), $fahrenheit" (F: derived from censor 1))
 	#write sensor1 information to log file
 	echo $line >> $thermometer_log_path/$thermometer_log
 
 	#write sensor data to rrdtool database
 	echo "writing sensor1 data to database"
-	rrdtool update $path_to_db/$db N:$celsius
+	rrdtool update $path_to_db/$db N:$reading1
 
 	####################################
 	#write weather station web site#####
@@ -140,7 +140,7 @@ log_temperature ()
 		<body bgcolor="white" text="black">
 			<center><h1>Weather Station</h1></center>
 			<center><img src="images/temp_h.png"></center>
-			<p><center><bold>Last Update: $now |Temperature (Fahrenheit): $fahrenheit | Temperature (Celsius): $celsius</bold></center></p>
+			<p><center><bold>Last Update: $now |Temperature (Fahrenheit): $fahrenheit | Temperature (Celsius): $reading1</bold></center></p>
 EOD
 	echo "<pre>" >> $webroot/$weather_home
 	tail -100 $thermometer_log_path/$thermometer_log >> $webroot/$weather_home
