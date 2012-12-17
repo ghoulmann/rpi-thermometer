@@ -123,7 +123,7 @@ log_temperature ()
 	echo $fahrenheit #troubleshooting
 	echo "Starting Log Process" #troubleshooting
 	echo "Preparing Date" #troubleshooting
-	line=$(echo "$stamp, $celsius, $fahrenheit")
+	line=$(echo "$stamp, $celsius (Thermometer1 C), $fahrenheit (Thermometer1 F), $local_outside ($weather_station C")
 	echo "This is the logged line: $line"
 	#write sensor information to log file
 	echo $line >> $thermometer_log_path/$thermometer_log
