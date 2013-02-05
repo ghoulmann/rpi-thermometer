@@ -41,3 +41,7 @@ Used this, perhaps unwisely: http://neilbaldwin.net/blog/weather/raspberry-pi-da
 Reflection
 ---------
 Coming to http://gonzotech.tumblr.com as soon as I get sed and cut options outta my head.
+
+Citography
+---------
+How to Install Cacti on Raspberry PI: http://n00blab.com/cacti-pi/
