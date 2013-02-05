@@ -17,10 +17,10 @@ Used with a single sensor to store and graph temperature over time. Produces a w
 Usage
 -----
 Use in conjunction with cron (sudo crontab -e). Configure to launch rpi-thermostat.sh every minute (the RRD database expects every 300 seconds).
-Includes an install and configuration function: rpi-thermostat.sh config
+Includes an install and configuration function: rpi-thermometer.sh config
 
 After running the script with the config argument, it's up to you to set a cron job: sudo crontab -e; end the file thusly:
-     * * * * * /usr/local/bin/rpi-thermometer. That will update the graphs, database, logs, and web page every minute.
+     * * * * * /usr/local/bin/rpi-thermometer update. That will update the graphs, database, logs, and web page every minute.
 
 Setup logrotate. Help soon.
 
