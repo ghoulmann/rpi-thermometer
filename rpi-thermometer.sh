@@ -119,7 +119,7 @@ log_temperature ()
 	echo $fahrenheit #troubleshooting
 	echo "Starting Log Process" #troubleshooting
 	echo "Preparing Date" #troubleshooting
-	line=$(echo "$stamp, $reading1 (c: sensor1), $fahrenheit" (F: derived from censor 1))
+	line=$(echo "$stamp, $reading1 (c: sensor1), $fahrenheit (F: derived from censor 1)")
 	#write sensor1 information to log file
 	echo $line >> $thermometer_log_path/$thermometer_log
 
